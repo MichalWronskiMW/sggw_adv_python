@@ -2,6 +2,9 @@ from datetime import datetime
 from typing import Dict, Optional
 from .models import Vehicle, Auction
 from .enums import FuelType, SellerType
+from .validation_models import VehicleInput
+from pydantic import ValidationError
+
 
 class VehicleFactory:
 
@@ -29,22 +32,25 @@ class VehicleFactory:
             val = row.get(key)
             return val.strip() if val else None
 
-        return Vehicle(
-            stock_number=get_val("Stock Number"),
-            year=int(get_val("Year")) if get_val("Year") else None,
-            make=get_val("Make"),
-            model=get_val("Model"),
-            vin=get_val("Vin#"),
-            current_bid=VehicleFactory.parse_float(get_val("Current Bid") or ""),
-            odometer=VehicleFactory.parse_int(get_val("Odometer") or ""),
-            fuel_type=FuelType(get_val("Fuel Type")) if get_val("Fuel Type") else None,
-            seller_type=SellerType(get_val("Seller Type")) if get_val("Seller Type") else None,
-            transmission=get_val("Transmission Type"),
-            drive_line=get_val("Drive Line Type"),
-            body_style=get_val("Body Style"),
-            primary_damage=get_val("Primary Damage"),
-            secondary_damage=get_val("Secondary Damage"),
-        )
+        raw_data = {
+            "stock_number": get_val("Stock Number"),
+            "year": int(get_val("Year")) if get_val("Year") else None,
+            "make": get_val("Make"),
+            "model": get_val("Model"),
+            "vin": get_val("Vin#"),
+            "current_bid": VehicleFactory.parse_float(get_val("Current Bid") or ""),
+            "odometer": VehicleFactory.parse_int(get_val("Odometer") or ""),
+            "fuel_type": FuelType(get_val("Fuel Type")) if get_val("Fuel Type") else None,
+            "seller_type": SellerType(get_val("Seller Type")) if get_val("Seller Type") else None,
+            "transmission": get_val("Transmission Type"),
+            "drive_line": get_val("Drive Line Type"),
+            "body_style": get_val("Body Style"),
+            "primary_damage": get_val("Primary Damage"),
+            "secondary_damage": get_val("Secondary Damage"),
+        }
+
+        validated = VehicleInput(**raw_data)
+        return Vehicle(**validated.__dict__)
 
 
 class AuctionFactory:
