@@ -63,7 +63,7 @@ pip install -r requirements.txt
 3. Uruchom program:
 
 ```bash
-python main.py
+python -m src.main
 ```
 
 Wynik zostanie zapisany w:
@@ -74,7 +74,9 @@ data/processed/vehicles_out.csv
 
 Testy znajdują się w katalogu tests/ i są uruchamiane przy użyciu pytest:
 
+```bash
 pytest tests/
+```
 
 Testy sprawdzają:
 - poprawność walidacji i parsowania pól liczbowych,
